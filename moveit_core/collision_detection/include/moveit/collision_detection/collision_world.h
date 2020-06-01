@@ -218,6 +218,19 @@ public:
   virtual void distanceRobot(const DistanceRequest& req, DistanceResult& res, const CollisionRobot& robot,
                              const robot_state::RobotState& state) const = 0;
 
+  /** \brief Compute the distance between a robot and the world
+   *  @param req A DistanceRequest object that encapsulates the distance request
+   *  @param res A DistanceResult object that encapsulates the distance result
+   *  @param robot The robot to check distance for
+   *  @param state The state for the robot to check distances from
+   *  @param acm Using an allowed collision matrix has the effect of ignoring distances from links that are always */
+  inline void distanceRobot(const DistanceRequest& req, DistanceResult& res, const CollisionRobot& robot, const robot_state::RobotState& state, const AllowedCollisionMatrix& acm) const
+  {
+      DistanceRequest req_non_const = req;
+      req_non_const.acm = &acm;
+      distanceRobot(req_non_const, res, robot, state);
+  }
+
   /** \brief The shortest distance to another world instance (\e world)
    *  @param verbose Output debug information about distance checks */
   inline double distanceWorld(const CollisionWorld& world, bool verbose = false) const
