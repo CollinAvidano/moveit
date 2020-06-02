@@ -218,17 +218,21 @@ public:
   virtual void distanceRobot(const DistanceRequest& req, DistanceResult& res, const CollisionRobot& robot,
                              const robot_state::RobotState& state) const = 0;
 
-  /** \brief Compute the distance between a robot and the world
+  /** \brief return a DistanceResult struct containing the distance between the robot and the world and the simplex that forms it
+   *  used by the checkDistance method
    *  @param req A DistanceRequest object that encapsulates the distance request
    *  @param res A DistanceResult object that encapsulates the distance result
    *  @param robot The robot to check distance for
    *  @param state The state for the robot to check distances from
    *  @param acm Using an allowed collision matrix has the effect of ignoring distances from links that are always */
-  inline void distanceRobot(const DistanceRequest& req, DistanceResult& res, const CollisionRobot& robot, const robot_state::RobotState& state, const AllowedCollisionMatrix& acm) const
+  void distanceRobot(const DistanceRequest& req, DistanceResult& res, const CollisionRobot& robot, const robot_state::RobotState& state, const AllowedCollisionMatrix& acm) const
   {
       DistanceRequest req_non_const = req;
       req_non_const.acm = &acm;
       req_non_const.enableGroup(robot.getRobotModel());
+      // Clear user passed result in case they didnt
+      // The distanceCallback function uses this for storage and keeping old results interferes
+      res.clear();
       distanceRobot(req_non_const, res, robot, state);
   }
 

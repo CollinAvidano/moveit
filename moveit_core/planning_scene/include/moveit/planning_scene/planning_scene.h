@@ -634,7 +634,7 @@ public:
   void checkDistance(const collision_detection::DistanceRequest& req, collision_detection::DistanceResult& res,
                      const robot_state::RobotState& robot_state) const
   {
-      checkDistance(req, res, robot_state, getAllowedCollisionMatrix());
+    checkDistance(req, res, robot_state, getAllowedCollisionMatrix());
   }
 
   /** \brief The distance between the robot model at state \e robot_state to the nearest collision, ignoring
@@ -655,7 +655,7 @@ public:
                                const robot_state::RobotState& robot_state,
                                const collision_detection::AllowedCollisionMatrix& acm) const
   {
-    getCollisionWorld()->distanceRobot(req, res, *getCollisionRobot(), robot_state);
+    getCollisionWorld()->distanceRobot(req, res, *getCollisionRobot(), robot_state, acm);
   }
 
 
