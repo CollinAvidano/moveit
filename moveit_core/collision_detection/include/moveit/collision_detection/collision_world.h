@@ -228,6 +228,7 @@ public:
   {
       DistanceRequest req_non_const = req;
       req_non_const.acm = &acm;
+      req_non_const.enableGroup(robot.getRobotModel());
       distanceRobot(req_non_const, res, robot, state);
   }
 

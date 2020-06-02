@@ -609,12 +609,18 @@ public:
    * \name Distance computation
    */
   /**@{*/
-
-
-
   /** \brief The distance between the robot model at state \e robot_state to the nearest collision (ignoring
    * self-collisions)
    */
+  void checkDistance(const collision_detection::DistanceRequest& req,
+                                     collision_detection::DistanceResult& res)
+  {
+      if (getCurrentState().dirtyCollisionBodyTransforms())
+          checkDistance(req, res, getCurrentStateNonConst());
+      else
+          checkDistance(req, res, getCurrentState());
+  }
+
   void checkDistance(const collision_detection::DistanceRequest& req, collision_detection::DistanceResult& res,
                      robot_state::RobotState& robot_state) const
   {
@@ -628,24 +634,7 @@ public:
   void checkDistance(const collision_detection::DistanceRequest& req, collision_detection::DistanceResult& res,
                      const robot_state::RobotState& robot_state) const
   {
-    getCollisionWorld()->distanceRobot(req, res, *getCollisionRobot(), robot_state, getAllowedCollisionMatrix());
-  }
-
-  /** \brief The distance between the robot model at state \e robot_state to the nearest collision (ignoring
-   * self-collisions), if the robot has no padding */
-  void checkDistanceUnpadded(const collision_detection::DistanceRequest& req, collision_detection::DistanceResult& res,
-                                       robot_state::RobotState& robot_state) const
-  {
-    robot_state.updateCollisionBodyTransforms();
-    checkDistanceUnpadded(req, res, static_cast<const robot_state::RobotState&>(robot_state));
-  }
-
-  /** \brief The distance between the robot model at state \e robot_state to the nearest collision (ignoring
-   * self-collisions), if the robot has no padding */
-  void checkDistanceUnpadded(const collision_detection::DistanceRequest& req, collision_detection::DistanceResult& res,
-                                       const robot_state::RobotState& robot_state) const
-  {
-    getCollisionWorld()->distanceRobot(req, res, *getCollisionRobotUnpadded(), robot_state, getAllowedCollisionMatrix());
+      checkDistance(req, res, robot_state, getAllowedCollisionMatrix());
   }
 
   /** \brief The distance between the robot model at state \e robot_state to the nearest collision, ignoring
@@ -666,7 +655,36 @@ public:
                                const robot_state::RobotState& robot_state,
                                const collision_detection::AllowedCollisionMatrix& acm) const
   {
-    getCollisionWorld()->distanceRobot(req, res, *getCollisionRobot(), robot_state, acm);
+    getCollisionWorld()->distanceRobot(req, res, *getCollisionRobot(), robot_state);
+  }
+
+
+  /** \brief The distance between the robot model at state \e robot_state to the nearest collision (ignoring
+   * self-collisions), if the robot has no padding */
+  void checkDistanceUnpadded(const collision_detection::DistanceRequest& req,
+                     collision_detection::DistanceResult& res)
+  {
+    if (getCurrentState().dirtyCollisionBodyTransforms())
+        checkDistanceUnpadded(req, res, getCurrentStateNonConst());
+    else
+        checkDistanceUnpadded(req, res, getCurrentState());
+  }
+
+  /** \brief The distance between the robot model at state \e robot_state to the nearest collision (ignoring
+   * self-collisions), if the robot has no padding */
+  void checkDistanceUnpadded(const collision_detection::DistanceRequest& req, collision_detection::DistanceResult& res,
+                                       robot_state::RobotState& robot_state) const
+  {
+    robot_state.updateCollisionBodyTransforms();
+    checkDistanceUnpadded(req, res, static_cast<const robot_state::RobotState&>(robot_state));
+  }
+
+  /** \brief The distance between the robot model at state \e robot_state to the nearest collision (ignoring
+   * self-collisions), if the robot has no padding */
+  void checkDistanceUnpadded(const collision_detection::DistanceRequest& req, collision_detection::DistanceResult& res,
+                                       const robot_state::RobotState& robot_state) const
+  {
+    checkDistanceUnpadded(req, res, robot_state, getAllowedCollisionMatrix());
   }
 
   /** \brief The distance between the robot model at state \e robot_state to the nearest collision, ignoring
